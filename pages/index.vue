@@ -2,26 +2,33 @@
   <table class="worker_list">
     <thead>
       <tr>
-        <th v-for="(header, header_index) in worker_list_headers"
+        <th v-for="(header, header_index) in headers"
             :key="header_index"
-            @click="sortWorkers(header_index)"
             :class="{ sortable: header.is_sortable }"
         >
-          {{ header.title }}
+          <div class="header_title_icons" @click="sortWorkers(header_index)">
+            {{ header.title }}
 
-          <template v-if="header.is_sortable">
-            <sort-ascending-mdi v-if="header.sort === 'asc'"></sort-ascending-mdi>
-            <sort-descending-mdi v-if="header.sort === 'desc'"></sort-descending-mdi>
-          </template>
+            <template v-if="header.is_sortable">
+              <sort-ascending-mdi v-if="header.sort_direction === 'asc'"></sort-ascending-mdi>
+              <sort-descending-mdi v-if="header.sort_direction === 'desc'"></sort-descending-mdi>
+            </template>
+          </div>
+
+          <div class="table_header_search" v-if="header.is_searchable">
+            <input type="text" v-model="header.search_value" v-on:input="searchWorkers(header.prop_name, $event)">
+          </div>
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="worker in workers" :key="worker.id.value">
-        <td v-for="(header, index) in worker_list_headers" :key="index">
-          {{ $helpers.getObjectPropertyValueByVariable(worker, header.prop_name) }}
-        </td>
-      </tr>
+      <template v-for="worker in workers">
+        <tr v-if="worker.is_visible" :key="worker.id.value">
+          <td v-for="(header, index) in headers" :key="index">
+            {{ $helpers.getObjectPropertyValueByVariable(worker, header.prop_name) }}
+          </td>
+        </tr>
+      </template>
     </tbody>
   </table>
 </template>
@@ -31,13 +38,55 @@ export default {
   name: 'IndexPage',
   data() {
     return {
-      worker_list_headers: [
-        { title: 'Имя', prop_name: 'name.first', sort: null, is_sortable: true },
-        { title: 'Фамилия', prop_name: 'name.last', sort: null, is_sortable: true },
-        { title: 'Обращение', prop_name: 'name.title', sort: null, is_sortable: true },
-        { title: 'Телефон', prop_name: 'phone', sort: null, is_sortable: false },
-        { title: 'Почта', prop_name: 'email', sort: null, is_sortable: false },
-        { title: 'Дата рождения', prop_name: 'dob.date', sort: null, is_sortable: true }
+      headers: [
+        {
+          title: 'Имя',
+          prop_name: 'name.first',
+          sort_direction: null,
+          search_value: null,
+          is_sortable: true,
+          is_searchable: true
+        },
+        {
+          title: 'Фамилия',
+          prop_name: 'name.last',
+          sort_direction: null,
+          search_value: null,
+          is_sortable: true,
+          is_searchable: true
+        },
+        {
+          title: 'Обращение',
+          prop_name: 'name.title',
+          sort_direction: null,
+          search_value: null,
+          is_sortable: false,
+          is_searchable: false
+        },
+        {
+          title: 'Телефон',
+          prop_name: 'phone',
+          sort_direction: null,
+          search_value: null,
+          is_sortable: false,
+          is_searchable: false
+        },
+        {
+          title: 'Почта',
+          prop_name: 'email',
+          sort_direction: null,
+          search_value: null,
+          is_sortable: false,
+          is_searchable: false
+        },
+        {
+          title: 'Дата рождения',
+          prop_name: 'dob.date',
+          sort_direction: null,
+          search_value: null,
+          is_sortable: true,
+          is_searchable: false
+        }
       ]
     }
   },
@@ -55,19 +104,35 @@ export default {
     );
   },
   methods: {
-    sortWorkers(column_index) {
-      const header = this.worker_list_headers[column_index];
-      const new_column_sort = (!header.sort || header.sort === 'desc') ? 'asc' : 'desc';
+    sortWorkers(header_index) {
+      const header = this.headers[header_index];
+      const new_sort_direction = (!header.sort_direction || header.sort_direction === 'desc') ? 'asc' : 'desc';
 
-      this.$store.commit('workers/SORT_LIST', { direction: new_column_sort, prop_name: header.prop_name });
+      if (header.is_sortable) {
+        this.$store.commit('workers/SORT_LIST', { direction: new_sort_direction, prop_name: header.prop_name });
 
-      this.worker_list_headers.forEach((header, index) => {
-        if (index !== column_index) {
-          header.sort = null;
+        this.headers.forEach((header, index) => {
+          if (index !== header_index) {
+            header.sort_direction = null;
+          }
+        });
+
+        header.sort_direction = new_sort_direction;
+      }
+    },
+    searchWorkers() {
+      const search_headers = [];
+
+      this.headers.forEach((header) => {
+        if (header.search_value) {
+          search_headers.push({
+            prop_name: header.prop_name,
+            search_value: header.search_value
+          })
         }
       });
 
-      header.sort = new_column_sort;
+      this.$store.commit('workers/SEARCH_LIST', search_headers);
     }
   }
 }
