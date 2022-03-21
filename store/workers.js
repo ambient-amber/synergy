@@ -2,15 +2,21 @@ export const state = () => ({
     list: []
 });
 
-export const getters = {
-    GET_WORKERS: state => {
-        return state.list;
-    }
-};
-
 export const mutations = {
     SET_LIST(state, payload) {
         state.list = payload
+    },
+    SORT_LIST(state, payload) {
+      if (payload.direction === 'asc') {
+        state.list.sort((a, b) => {
+          const a_prop = this.$helpers.getObjectPropertyValueByVariable(a, payload.prop_name);
+          const b_prop = this.$helpers.getObjectPropertyValueByVariable(b, payload.prop_name);
+
+          return a_prop < b_prop ? -1 : 1
+        });
+      } else {
+        state.list.reverse();
+      }
     }
 };
 
