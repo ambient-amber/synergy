@@ -3,7 +3,7 @@
     <thead>
       <tr>
         <th v-for="(header, header_index) in worker_list_headers"
-            :key="index"
+            :key="header_index"
             @click="sortWorkers(header_index)"
         >
           {{ header.title }}
@@ -13,7 +13,7 @@
     <tbody>
       <tr v-for="worker in workers" :key="worker.id">
         <td v-for="(header, index) in worker_list_headers" :key="index">
-          {{ worker[header.prop_name] }}
+          {{ getObjectPropertyValueByVariable(worker, header.prop_name) }}
         </td>
       </tr>
     </tbody>
@@ -25,33 +25,33 @@ export default {
   name: 'IndexPage',
   data() {
     return {
-      workers: [
-        {
-          id: 1,
-          first_name: 'Антон',
-          second_name: 'Тарасов',
-          patronymic: 'Игоревич',
-          phone: '89513071543',
-          email: 'Anarhiya_90@mail.ru'
-        },
-        {
-          id: 2,
-          first_name: 'Алёна',
-          second_name: 'Старцева',
-          patronymic: 'Васильевна',
-          phone: '89513071543',
-          email: 'Honey_moon_91@mail.ru'
-        }
-      ],
       worker_list_headers: [
-        { title: 'Имя', prop_name: 'first_name', sort: null },
-        { title: 'Фамилия', prop_name: 'second_name', sort: null },
-        { title: 'Отчество', prop_name: 'patronymic', sort: null },
-        { title: 'Телефон', prop_name: 'phone', sort: null },
-        { title: 'Почта', prop_name: 'email', sort: null }
+        { title: 'Имя', prop_name: 'name.first', sort: null, is_sortable: true },
+        { title: 'Фамилия', prop_name: 'name.second', sort: null, is_sortable: true },
+        { title: 'Отчество', prop_name: 'patronymic', sort: null, is_sortable: true },
+        { title: 'Телефон', prop_name: 'phone', sort: null, is_sortable: false },
+        { title: 'Почта', prop_name: 'email', sort: null, is_sortable: false },
+        { title: 'Дата рождения', prop_name: 'birthday', sort: null, is_sortable: true }
       ]
     }
   },
+  computed: {
+    workers() {
+      this.$store.dispatch(
+        'workers/getList',
+        {
+          fields: ['id', 'name', 'email', 'login', 'picture', 'registered', 'phone']
+        }
+      );
+
+      let workers = this.$store.state.workers.list;
+
+      console.log('workers', workers);
+
+      return workers;
+    },
+  },
+  created() {},
   methods: {
     sortWorkers(column_index) {
       let column_sort = this.worker_list_headers[column_index].sort;
@@ -64,6 +64,22 @@ export default {
 
         column_sort = 'desc';
       }
+    },
+    getObjectPropertyValueByVariable(object, variables) {
+      console.log('getObjectPropertyValueByVariable');
+      variables = variables.split('.');
+
+      for (let i = 0; i < variables.length; i++) {
+        object = object[variables[i]];
+
+        console.log(object, variables[i], i);
+
+        if (!object) {
+          break;
+        }
+      }
+
+      return object;
     }
   }
 }
