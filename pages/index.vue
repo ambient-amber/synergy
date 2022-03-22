@@ -1,36 +1,45 @@
 <template>
-  <table class="worker_list">
-    <thead>
-      <tr>
-        <th v-for="(header, header_index) in headers"
-            :key="header_index"
-            :class="{ sortable: header.is_sortable }"
-        >
-          <div class="header_title_icons" @click="sortWorkers(header_index)">
-            {{ header.title }}
+  <div class="employees_list_wrap">
+    <table class="employees_list">
+      <thead>
+        <tr>
+          <th v-for="(header, header_index) in headers"
+              :key="header_index"
+              :class="{ sortable: header.is_sortable }"
+          >
+            <div class="header_title_icons" @click="sortEmployees(header_index)">
+              {{ header.title }}
 
-            <template v-if="header.is_sortable">
-              <sort-ascending-mdi v-if="header.sort_direction === 'asc'"></sort-ascending-mdi>
-              <sort-descending-mdi v-if="header.sort_direction === 'desc'"></sort-descending-mdi>
-            </template>
-          </div>
+              <template v-if="header.is_sortable">
+                <sort-ascending-mdi v-if="header.sort_direction === 'asc'"></sort-ascending-mdi>
+                <sort-descending-mdi v-if="header.sort_direction === 'desc'"></sort-descending-mdi>
+              </template>
+            </div>
 
-          <div class="table_header_search" v-if="header.is_searchable">
-            <input type="text" v-model="header.search_value" v-on:input="searchWorkers(header.prop_name, $event)">
-          </div>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <template v-for="worker in workers">
-        <tr v-if="worker.is_visible" :key="worker.id.value">
-          <td v-for="(header, index) in headers" :key="index">
-            {{ $helpers.getObjectPropertyValueByVariable(worker, header.prop_name) }}
-          </td>
+            <div class="table_header_search" v-if="header.is_searchable">
+              <input type="text" v-model="header.search_value" v-on:input="searchEmployees(header.prop_name, $event)">
+            </div>
+          </th>
         </tr>
-      </template>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <template v-for="employee in employees">
+          <tr v-if="employee.is_visible" :key="employee.id.value">
+            <td v-for="(header, index) in headers" :key="index">
+              <template v-if="header.is_link && employee.link">
+                <NuxtLink :to="employee.link">
+                  {{ $helpers.getObjectPropertyValueByVariable(employee, header.prop_name) }}
+                </NuxtLink>
+              </template>
+              <template v-else>
+                {{ $helpers.getObjectPropertyValueByVariable(employee, header.prop_name) }}
+              </template>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -45,7 +54,8 @@ export default {
           sort_direction: null,
           search_value: null,
           is_sortable: true,
-          is_searchable: true
+          is_searchable: true,
+          is_link: true
         },
         {
           title: 'Фамилия',
@@ -53,7 +63,8 @@ export default {
           sort_direction: null,
           search_value: null,
           is_sortable: true,
-          is_searchable: true
+          is_searchable: true,
+          is_link: true
         },
         {
           title: 'Обращение',
@@ -61,7 +72,8 @@ export default {
           sort_direction: null,
           search_value: null,
           is_sortable: false,
-          is_searchable: false
+          is_searchable: false,
+          is_link: false
         },
         {
           title: 'Телефон',
@@ -69,7 +81,8 @@ export default {
           sort_direction: null,
           search_value: null,
           is_sortable: false,
-          is_searchable: false
+          is_searchable: false,
+          is_link: false
         },
         {
           title: 'Почта',
@@ -77,7 +90,8 @@ export default {
           sort_direction: null,
           search_value: null,
           is_sortable: false,
-          is_searchable: false
+          is_searchable: false,
+          is_link: false
         },
         {
           title: 'Дата рождения',
@@ -85,31 +99,27 @@ export default {
           sort_direction: null,
           search_value: null,
           is_sortable: true,
-          is_searchable: false
+          is_searchable: true,
+          is_link: false
         }
       ]
     }
   },
   computed: {
-    workers() {
-      return this.$store.state.workers.list;
+    employees() {
+      return this.$store.state.employees.list;
     },
   },
   created() {
-    this.$store.dispatch(
-      'workers/getList',
-      {
-        fields: [ 'id', 'name', 'email', 'login', 'picture', 'dob', 'phone' ]
-      }
-    );
+
   },
   methods: {
-    sortWorkers(header_index) {
+    sortEmployees(header_index) {
       const header = this.headers[header_index];
       const new_sort_direction = (!header.sort_direction || header.sort_direction === 'desc') ? 'asc' : 'desc';
 
       if (header.is_sortable) {
-        this.$store.commit('workers/SORT_LIST', { direction: new_sort_direction, prop_name: header.prop_name });
+        this.$store.commit('employees/SORT_LIST', { direction: new_sort_direction, prop_name: header.prop_name });
 
         this.headers.forEach((header, index) => {
           if (index !== header_index) {
@@ -120,7 +130,7 @@ export default {
         header.sort_direction = new_sort_direction;
       }
     },
-    searchWorkers() {
+    searchEmployees() {
       const search_headers = [];
 
       this.headers.forEach((header) => {
@@ -132,8 +142,21 @@ export default {
         }
       });
 
-      this.$store.commit('workers/SEARCH_LIST', search_headers);
+      console.log(search_headers);
+
+      this.$store.commit('employees/SEARCH_LIST', search_headers);
     }
   }
 }
 </script>
+
+<style scoped>
+  .employees_list_wrap {
+    overflow-x: scroll;
+  }
+
+  .employees_list td,
+  .employees_list th {
+    white-space: nowrap;
+  }
+</style>

@@ -1,11 +1,18 @@
 export const state = () => ({
-    list: []
+    list: [],
+    item: null
 });
 
 export const mutations = {
     SET_LIST(state, payload) {
         state.list = payload;
     },
+    SET_ITEM(state, payload) {
+      state.item = payload;
+    },
+    /**
+     * Сортировка списка сотрудников.
+     * */
     SORT_LIST(state, payload) {
       if (payload.direction === 'asc') {
         state.list.sort((a, b) => {
@@ -18,23 +25,26 @@ export const mutations = {
         state.list.reverse();
       }
     },
+
+    /**
+     * Поиск сотрудников по свойствам.
+     * */
     SEARCH_LIST(state, search_props) {
         if (search_props.length) {
             // Проход по сотрудникам
-            state.list.forEach((worker) => {
+            state.list.forEach((employee) => {
                 let result_search_match = true;
 
                 // Каждого сотрудника проверяем на все поля поиска.
                 // Отсеивается, если не подходит по одному из параметров.
                 for (const search_prop of search_props) {
-                    // ToDo добавить опцию поиска (строка, дата)
                     if (result_search_match) {
-                        const worker_prop_value = this.$helpers.getObjectPropertyValueByVariable(
-                            worker,
+                        const employee_prop_value = this.$helpers.getObjectPropertyValueByVariable(
+                            employee,
                             search_prop.prop_name
                         );
 
-                        if (worker_prop_value.toLowerCase().indexOf(search_prop.search_value) === -1) {
+                        if (employee_prop_value.toLowerCase().indexOf(search_prop.search_value) === -1) {
                             result_search_match = false;
                         }
                     } else {
@@ -42,7 +52,7 @@ export const mutations = {
                     }
                 }
 
-                worker.is_visible = !!result_search_match;
+                employee.is_visible = !!result_search_match;
             });
         } else {
             state.list.forEach((item) => {
@@ -60,12 +70,28 @@ export const actions = {
 
         await this.$axios.get(url).then((response) => {
             if (response.data.results) {
+              console.log(response.data);
                 response.data.results.forEach((item) => {
                     item.is_visible = true;
+                    item.link = item.id.value ? '/employees/' + item.id.value : null;
                 });
 
                 commit('SET_LIST', response.data.results);
             }
         });
+    },
+    async getEmployeeById ({ commit, state }, id) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          const employee = state.list.find(item => item.id.value === id);
+
+          if (employee) {
+            commit('SET_ITEM', employee);
+            resolve();
+          } else {
+            reject();
+          }
+        }, 1000);
+      });
     }
 };

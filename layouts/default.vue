@@ -1,5 +1,6 @@
 <template>
   <div class="default_layout">
+      <TheHeader />
       <Nuxt />
   </div>
 </template>
@@ -9,12 +10,20 @@
     data() {
       return {}
     },
-    /*computed: {
-      user() {
-          return this.$store.state.users.user;
-      },
-    },*/
-    methods: {
-    }
+    created() {
+      this.$store.dispatch(
+        'employees/getList',
+        {
+          fields: [ 'id', 'name', 'email', 'login', 'picture', 'dob', 'phone' ]
+        }
+      );
+    },
+    methods: {}
   }
 </script>
+
+<style>
+  .default_layout {
+    padding: 0 40px;
+  }
+</style>
