@@ -10,14 +10,6 @@
     data() {
       return {}
     },
-    created() {
-      this.$store.dispatch(
-        'employees/getList',
-        {
-          fields: [ 'id', 'name', 'email', 'login', 'picture', 'dob', 'phone' ]
-        }
-      );
-    },
     methods: {}
   }
 </script>

@@ -1,11 +1,14 @@
 <template>
-  <div class="employee_page" v-if="employee">
+  <div class="employee_page">
     <div class="bread_crumbs">
       <NuxtLink to="/">
         Назад к списку сотрудников
       </NuxtLink>
     </div>
-    <div class="employee_cart">
+
+    <pre-loader type="employee_cart" v-if="is_loading"></pre-loader>
+
+    <div class="employee_cart" v-if="employee">
       <div class="employee_cart_picture" @click="openLargePhoto">
         <img :src="employee.picture.medium">
       </div>
@@ -30,8 +33,13 @@
 </template>
 
 <script>
+import preLoader from '@/components/Preloader';
+
 export default {
   name: "employee",
+  components: {
+    preLoader
+  },
   data() {
     return {
       employee_display_properties: [
@@ -45,29 +53,30 @@ export default {
   },
   computed: {
     employee() {
-      return this.$store.state.employees.item;
+      return this.$store.state.employees.employee;
     },
+    is_loading() {
+      return this.$store.state.is_loading;
+    }
   },
   async mounted() {
+    this.$store.commit('TOGGLE_LOADING', true);
+
     await this.$store.dispatch(
       'employees/getEmployeeById',
       this.$route.params.id
     );
+
+    this.$store.commit('TOGGLE_LOADING', false);
   },
   methods: {
     openLargePhoto() {
 
     }
-  }
-  /*async created() {
-    const employee = await this.$store.dispatch(
-      'employees/getEmployeeById',
-      this.$route.params.id
-    );
-
-    console.log('created', employee);
   },
-  methods() {  }*/
+  beforeDestroy() {
+    this.$store.commit('employees/SET_EMPLOYEE', null);
+  }
 }
 </script>
 
@@ -86,6 +95,7 @@ export default {
     margin: 0 25px 0 0;
     padding: 80px;
     border: 1px solid grey;
+    cursor: pointer;
   }
 
   .employee_cart_info_prop {
