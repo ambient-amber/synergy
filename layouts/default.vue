@@ -1,5 +1,5 @@
 <template>
-  <div class="default_layout">
+  <div :class="['default_layout', {modal_opened: is_modal_visible}]">
       <TheHeader />
       <Nuxt />
   </div>
@@ -7,8 +7,17 @@
 
 <script>
   export default {
-    data() {
-      return {}
+    head() {
+      return {
+        bodyAttrs: {
+          class: this.is_modal_visible ? 'modal_open' : ''
+        }
+      }
+    },
+    computed: {
+      is_modal_visible() {
+        return this.$store.state.is_modal_visible;
+      }
     },
     methods: {}
   }

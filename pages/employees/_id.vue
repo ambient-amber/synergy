@@ -10,7 +10,7 @@
 
     <div class="employee_cart" v-if="employee">
       <div class="employee_cart_picture" @click="openLargePhoto">
-        <img :src="employee.picture.medium">
+        <img :src="employee.picture.medium" />
       </div>
       <div class="employee_cart_info">
         <div class="employee_cart_info_props">
@@ -29,16 +29,26 @@
       </div>
     </div>
 
+    <modal>
+      <template v-slot:modal_content>
+        <img :src="employee.picture.large" />
+      </template>
+    </modal>
   </div>
 </template>
 
 <script>
 import preLoader from '@/components/Preloader';
+import modal from '@/components/Modal';
 
 export default {
   name: "employee",
   components: {
-    preLoader
+    preLoader,
+    modal,
+  },
+  head: {
+    title: 'Страница сотрудника'
   },
   data() {
     return {
@@ -71,7 +81,7 @@ export default {
   },
   methods: {
     openLargePhoto() {
-
+      this.$store.commit('TOGGLE_MODAL_VISIBILITY', true);
     }
   },
   beforeDestroy() {
@@ -89,10 +99,10 @@ export default {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    gap: 25px;
   }
 
   .employee_cart_picture {
-    margin: 0 25px 0 0;
     padding: 80px;
     border: 1px solid grey;
     cursor: pointer;
