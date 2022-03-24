@@ -1,10 +1,23 @@
+html {
+  height: 100%;
+}
+
 body {
   margin: 0;
   padding: 0;
   font-size: 15px;
+  height: 100%;
 }
 body.modal_open {
   overflow: hidden;
+}
+
+#__nuxt {
+  height: 100%;
+}
+
+#__layout {
+  height: 100%;
 }
 
 /* --- Общие классы --- */

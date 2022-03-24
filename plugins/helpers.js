@@ -17,6 +17,22 @@ export default ({ app }, inject) => {
       }
 
       return object;
+    },
+
+    /**
+     * Валидация значений.
+     * Возвращает либо true, либо текст ошибки.
+     * */
+    validateValue: (value, type) => {
+      if (type === 'not_empty') {
+        return value.length || 'Обзятельное значение';
+      } else if (type === 'password') {
+        if (/(?=.*[a-b])(?=.*\d)(?=.*[_-])/.test(value)) {
+          return true;
+        } else {
+          return 'Ваш пароль должен содержать цифры, буквы, знаки препинания, завязку, кульминацию и неожиданный финал';
+        }
+      }
     }
   }
 

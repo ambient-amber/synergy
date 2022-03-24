@@ -43,6 +43,7 @@ import modal from '@/components/Modal';
 
 export default {
   name: "employee",
+  middleware: ['auth'],
   components: {
     preLoader,
     modal,

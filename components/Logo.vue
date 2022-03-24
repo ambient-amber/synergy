@@ -64,10 +64,6 @@
 </template>
 
 <style>
-.logo {
-  margin: 0 30px 0 0;
-}
-
 .logo_svg {
   height: 100px;
 }

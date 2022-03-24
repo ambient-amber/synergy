@@ -19,8 +19,10 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    padding: 40px 0;
+    gap: 25px;
+    padding: 20px 40px;
     margin: 0 0 40px;
+    border-bottom: 1px solid #456b83;
   }
 
   .header_title {

@@ -112,20 +112,6 @@ export default {
       ]
     }
   },
-  /*async fetch({store}) {
-    if (!store.getters['employees/GET_EMPLOYEES'].length) {
-      store.commit('TOGGLE_LOADING', true);
-
-      await store.dispatch(
-        'employees/fetchEmployees',
-        {
-          fields: [ 'id', 'name', 'email', 'login', 'picture', 'dob', 'phone' ]
-        }
-      );
-
-      store.commit('TOGGLE_LOADING', false);
-    }
-  },*/
   computed: {
     employees() {
       return this.$store.state.employees.employees;

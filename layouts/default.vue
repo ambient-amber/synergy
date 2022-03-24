@@ -1,7 +1,10 @@
 <template>
   <div :class="['default_layout', {modal_opened: is_modal_visible}]">
-      <TheHeader />
+    <TheHeader />
+
+    <div class="default_layout_content">
       <Nuxt />
+    </div>
   </div>
 </template>
 
@@ -18,13 +21,16 @@
       is_modal_visible() {
         return this.$store.state.is_modal_visible;
       }
-    },
-    methods: {}
+    }
   }
 </script>
 
 <style>
   .default_layout {
+    height: 100%;
+  }
+
+  .default_layout_content {
     padding: 0 40px;
   }
 </style>
