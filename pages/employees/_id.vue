@@ -91,7 +91,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .bread_crumbs {
     margin: 0 0 25px;
   }
@@ -101,29 +101,29 @@ export default {
     justify-content: center;
     flex-wrap: wrap;
     gap: 25px;
-  }
 
-  .employee_cart_picture {
-    padding: 80px;
-    border: 1px solid grey;
-    cursor: pointer;
-  }
+    &_picture {
+      padding: 80px;
+      border: 1px solid grey;
+      cursor: pointer;
+    }
 
-  .employee_cart_info_prop {
-    display: flex;
-    margin: 0 0 10px;
-    padding: 0 0 10px;
-    border-bottom: 1px dotted grey;
-  }
+    &_info_prop {
+      display: flex;
+      margin: 0 0 10px;
+      padding: 0 0 10px;
+      border-bottom: 1px dotted grey;
 
-  .employee_cart_info_prop_title {
-    margin: 0 25px 0 0;
-    font-weight: bold;
-    font-size: 16px;
-  }
+      &_title {
+        margin: 0 25px 0 0;
+        font-weight: bold;
+        font-size: 16px;
+      }
 
-  .employee_cart_info_prop_value {
-    flex: 1;
-    text-align: right;
+      &_value {
+        flex: 1;
+        text-align: right;
+      }
+    }
   }
 </style>

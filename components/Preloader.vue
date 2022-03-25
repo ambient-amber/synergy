@@ -13,6 +13,10 @@
       <div class="employee_cart_preloader_props_row" v-for="r in employee_cart.rows_count" :key="'r' + r"></div>
     </div>
   </div>
+
+  <div class="default_loader" v-else>
+    <img src="~/assets/img/animated_dog.gif" />
+  </div>
 </template>
 
 <script>
@@ -35,62 +39,80 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   /* --- Вид таблицы --- */
   .table_preloader_row {
     display: flex;
     height: 30px;
     justify-content: space-between;
     align-items: center;
-  }
 
-  .table_preloader_row:nth-child(2n) {
-    background: #f9f9f9;
-  }
+    &:nth-child(2n) {
+      background: #f9f9f9;
+    }
 
-  .table_preloader_row_cell:nth-child(1) {
-    width: calc(10% - 10px);
-  }
-  .table_preloader_row_cell:nth-child(2) {
-    width: calc(70% - 10px);
-  }
-  .table_preloader_row_cell:nth-child(3) {
-    width: calc(20% - 10px);
+    &_cell {
+      &:nth-child(1) {
+        width: calc(10% - 10px);
+      }
+
+      &:nth-child(2) {
+        width: calc(70% - 10px);
+      }
+
+      &:nth-child(3) {
+        width: calc(20% - 10px);
+      }
+
+      &_content {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        background: #e6e6e6;
+      }
+    }
   }
 
   .table_preloader_preloader_row:first-child .table_preloader_preloader_row_cell_content {
     border-bottom: 2px solid #c5c5c5;
   }
 
-  .table_preloader_row_cell_content {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    background: #e6e6e6;
-  }
-
   /* --- Вид карточки сотрудника --- */
   .employee_cart_preloader {
     display: flex;
-    width: 500px;
-    margin: 0 auto;
-  }
-
-  .employee_cart_preloader_photo {
-    width: 234px;
-    height: 234px;
-    margin: 0 25px 0 0;
-    background: #e6e6e6;
-  }
-
-  .employee_cart_preloader_props {
-    flex: 1;
-  }
-
-  .employee_cart_preloader_props_row {
+    flex-wrap: wrap;
     width: 100%;
-    height: 22px;
-    margin: 0 0 20px;
-    background: linear-gradient(to right, #eff2f4, #dfe2e6);
+    max-width: 500px;
+    margin: 0 auto;
+    gap: 25px;
+
+    @media screen and (max-width: 600px) {
+      & {
+        flex-direction: column;
+      }
+    }
+
+    &_photo {
+      width: 234px;
+      height: 234px;
+      margin: 0 auto;
+      background: #e6e6e6;
+    }
+
+    &_props {
+      flex: 1;
+
+      &_row {
+        width: 100%;
+        height: 22px;
+        margin: 0 0 20px;
+        background: linear-gradient(to right, #eff2f4, #dfe2e6);
+      }
+    }
+  }
+
+  /* --- gif по умолчанию --- */
+  .default_loader {
+    text-align: center;
   }
 </style>

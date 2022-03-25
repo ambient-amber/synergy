@@ -14,7 +14,7 @@
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
   .header {
     display: flex;
     flex-wrap: wrap;
@@ -23,11 +23,11 @@
     padding: 20px 40px;
     margin: 0 0 40px;
     border-bottom: 1px solid #456b83;
-  }
 
-  .header_title {
-    flex: 1;
-    font-size: 40px;
-    font-weight: bold;
+    &_title {
+      flex: 1;
+      font-size: 40px;
+      font-weight: bold;
+    }
   }
 </style>

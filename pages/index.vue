@@ -123,9 +123,6 @@ export default {
   async created() {
     this.$store.commit('TOGGLE_LOADING', true);
 
-    /*console.log('this.employees', this.employees)
-    console.log('this.$store.state.employees.employees', this.$store.state.employees.employees)*/
-
     if (!this.employees.length) {
       await this.$store.dispatch(
         'employees/fetchEmployees',
@@ -166,15 +163,13 @@ export default {
         }
       });
 
-      console.log(search_headers);
-
       this.$store.commit('employees/SEARCH_EMPLOYEES', search_headers);
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .employees_list_wrap {
   overflow-x: scroll;
 }

@@ -9,24 +9,31 @@
 
       <form class="login_block_form">
         <div class="login_block_form_row" v-for="(field, index) in fields" :key="index">
-          <label class="login_label" :for="'login_input_' + field.prop_name">{{ field.title }}</label>
-          <input class="login_input" :id="'login_input_' + field.prop_name" :type="field.input_type" v-model="field.value">
+          <label class="login_block_form_row_label" :for="'login_input_' + field.prop_name">{{ field.title }}</label>
+          <input class="login_block_form_row_input" :id="'login_input_' + field.prop_name" :type="field.input_type" v-model="field.value">
 
           <div class="login_block_form_row_error" v-if="field.error.length">{{ field.error }}</div>
         </div>
 
-        <input type="submit" class="login_input" value="Авторизоваться" @click.prevent="auth">
+        <input type="submit" class="login_block_form_submit" value="Авторизоваться" @click.prevent="auth">
 
         <div class="login_block_form_error" v-if="auth_error.length">{{ auth_error }}</div>
       </form>
+
+      <pre-loader v-if="is_loading"></pre-loader>
     </div>
   </div>
 </template>
 
 <script>
+import preLoader from '@/components/Preloader';
+
 export default {
   name: "login",
   layout: 'blank',
+  components: {
+    preLoader
+  },
   data() {
     return {
       fields: [
@@ -50,6 +57,11 @@ export default {
       auth_error: ''
     }
   },
+  computed: {
+    is_loading() {
+      return this.$store.state.is_loading;
+    }
+  },
   methods: {
     async auth() {
       let result_validation = true;
@@ -59,8 +71,6 @@ export default {
       this.fields.forEach((field) => {
         let field_validation = this.$helpers.validateValue(field.value, field.validation_type);
 
-        console.log('field_validation', field_validation);
-
         if (field_validation === true) {
           field.error = '';
         } else {
@@ -69,12 +79,11 @@ export default {
         }
       });
 
-      console.log('this.fields', this.fields);
-      console.log('result_validation', result_validation);
-
       if (result_validation) {
         const login_field_object = this.fields.filter(field => field.prop_name === 'login')[0];
         const password_field_object = this.fields.filter(field => field.prop_name === 'password')[0];
+
+        this.$store.commit('TOGGLE_LOADING', true);
 
         await this.$store.dispatch(
           'auth/auth',
@@ -82,17 +91,17 @@ export default {
         ).then(() => {
           this.$router.push('/');
         }).catch((error) => {
-          console.log(error);
           this.auth_error = error;
-          console.log(this.auth_error);
         });
+
+        this.$store.commit('TOGGLE_LOADING', false);
       }
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .login_page {
     display: flex;
     align-items: center;
@@ -107,58 +116,71 @@ export default {
     width: 100%;
     max-width: 420px;
     color: #fff;
-  }
 
-  .login_block_logo {
-    text-align: center;
-  }
+    @media screen and (max-width: 600px) {
+      & {
+        margin: 0 20px;
+      }
+    }
 
-  .login_block_title {
-    margin: 0 0 25px;
-    color: #21262d;
-    font-size: 30px;
-    text-align: center;
-  }
+    &_logo {
+      text-align: center;
+    }
 
-  .login_block_form {
-    border-radius: 10px;
-    padding: 16px;
-    background: #21262d;
-  }
+    &_title {
+      margin: 0 0 25px;
+      color: #21262d;
+      font-size: 30px;
+      text-align: center;
+    }
 
-  .login_block_form_row_error {
-    color: red;
-    margin: -25px 0 20px;
-    font-size: 12px;
-  }
+    &_form {
+      border-radius: 10px;
+      padding: 16px;
+      background: #21262d;
 
-  .login_block_form_error {
-    text-align: center;
-    color: red;
-  }
+      &_row {
+        &_error {
+          color: red;
+          margin: -25px 0 20px;
+          font-size: 12px;
+        }
 
-  .login_label {
-    display: block;
-    margin: 0 0 10px;
-  }
+        &_label {
+          display: block;
+          margin: 0 0 10px;
+        }
 
-  .login_input {
-    display: block;
-    width: 100%;
-    margin: 0 0 35px;
-    padding: 5px 10px;
-    box-sizing: border-box;
-  }
-  .login_input[type="submit"] {
-    background: #238636;
-    text-align: center;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 15px;
-  }
-  .login_input[type="submit"]:hover {
-    background: #2ea043;
+        &_input {
+          display: block;
+          width: 100%;
+          margin: 0 0 35px;
+          padding: 5px 10px;
+          box-sizing: border-box;
+        }
+      }
+
+      &_submit {
+        width: 100%;
+        padding: 5px 10px;
+        box-sizing: border-box;
+        background: #238636;
+        text-align: center;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 15px;
+      }
+      &_submit:hover {
+        background: #2ea043;
+      }
+
+      &_error {
+        margin: 20px 0 0;
+        text-align: center;
+        color: red;
+      }
+    }
   }
 </style>

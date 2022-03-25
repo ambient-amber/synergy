@@ -10,6 +10,7 @@
 
 <script>
   export default {
+    name: 'DefaultLayout',
     head() {
       return {
         bodyAttrs: {
