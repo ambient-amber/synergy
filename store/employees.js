@@ -3,12 +3,6 @@ export const state = () => ({
     employee: null
 });
 
-export const getters = {
-  GET_EMPLOYEES: state => {
-    return state.employees
-  }
-}
-
 export const mutations = {
     SET_EMPLOYEES(state, employees) {
         state.employees = employees;

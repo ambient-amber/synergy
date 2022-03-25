@@ -9,16 +9,16 @@
 
       <form class="login_block_form">
         <div class="login_block_form_row" v-for="(field, index) in fields" :key="index">
-          <label for="login_field" class="login_label">{{ field.title }}</label>
-          <input id="login_field" class="login_input" type="text" v-model="field.value">
+          <label class="login_label" :for="'login_input_' + field.prop_name">{{ field.title }}</label>
+          <input class="login_input" :id="'login_input_' + field.prop_name" :type="field.input_type" v-model="field.value">
 
-          <div class="login_block_form_row_error" v-if="field.error">{{ field.error }}</div>
+          <div class="login_block_form_row_error" v-if="field.error.length">{{ field.error }}</div>
         </div>
 
-        <input type="submit" class="login_input" value="Авторизоваться">
-      </form>
+        <input type="submit" class="login_input" value="Авторизоваться" @click.prevent="auth">
 
-      <div class="login_block_error" v-if="auth_error"></div>
+        <div class="login_block_form_error" v-if="auth_error.length">{{ auth_error }}</div>
+      </form>
     </div>
   </div>
 </template>
@@ -35,14 +35,16 @@ export default {
           prop_name: 'login',
           value: '',
           validation_type: 'not_empty',
-          error: ''
+          error: '',
+          input_type: 'text'
         },
         {
           title: 'Пароль',
           prop_name: 'password',
           value: '',
           validation_type: 'password',
-          error: ''
+          error: '',
+          input_type: 'password'
         }
       ],
       auth_error: ''
@@ -50,29 +52,40 @@ export default {
   },
   methods: {
     async auth() {
-      let result_valiation = true;
+      let result_validation = true;
+
+      this.auth_error = '';
 
       this.fields.forEach((field) => {
         let field_validation = this.$helpers.validateValue(field.value, field.validation_type);
 
+        console.log('field_validation', field_validation);
+
         if (field_validation === true) {
           field.error = '';
         } else {
-          result_valiation = false;
+          result_validation = false;
           field.error = field_validation
         }
       });
 
-      if (result_valiation) {
-        const login_field = this.fields.filter(field => field.prop_name === 'login');
-        const password_field = this.fields.filter(field => field.prop_name === 'password');
+      console.log('this.fields', this.fields);
+      console.log('result_validation', result_validation);
 
-        let auth_response = await this.$store.dispatch(
+      if (result_validation) {
+        const login_field_object = this.fields.filter(field => field.prop_name === 'login')[0];
+        const password_field_object = this.fields.filter(field => field.prop_name === 'password')[0];
+
+        await this.$store.dispatch(
           'auth/auth',
-          { login: login_field.value, password: password_field.value }
-        );
-
-        console.log(auth_response);
+          { login: login_field_object.value, password: password_field_object.value }
+        ).then(() => {
+          this.$router.push('/');
+        }).catch((error) => {
+          console.log(error);
+          this.auth_error = error;
+          console.log(this.auth_error);
+        });
       }
     }
   }
@@ -113,6 +126,17 @@ export default {
     background: #21262d;
   }
 
+  .login_block_form_row_error {
+    color: red;
+    margin: -25px 0 20px;
+    font-size: 12px;
+  }
+
+  .login_block_form_error {
+    text-align: center;
+    color: red;
+  }
+
   .login_label {
     display: block;
     margin: 0 0 10px;
@@ -121,7 +145,7 @@ export default {
   .login_input {
     display: block;
     width: 100%;
-    margin: 0 0 25px;
+    margin: 0 0 35px;
     padding: 5px 10px;
     box-sizing: border-box;
   }

@@ -25,7 +25,7 @@ export default ({ app }, inject) => {
      * */
     validateValue: (value, type) => {
       if (type === 'not_empty') {
-        return value.length || 'Обзятельное значение';
+        return !!value.length || 'Обзятельное значение';
       } else if (type === 'password') {
         if (/(?=.*[a-b])(?=.*\d)(?=.*[_-])/.test(value)) {
           return true;
@@ -34,7 +34,7 @@ export default ({ app }, inject) => {
         }
       }
     }
-  }
+  };
 
   inject('helpers', helpers);
 }

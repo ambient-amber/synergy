@@ -1,29 +1,31 @@
 export const state = () => ({
-  authenticated: false,
+  is_authorized: false,
   login: 'amber',
   password: 'a_13'
 });
 
 export const mutations = {
-  setAuthenticated(state, status) {
-    state.authenticated = status
+  TOGGLE_IS_AUTHORIZED(state, status) {
+    state.is_authorized = status;
   }
 };
 
 export const actions = {
   async auth({ commit, state }, form_values) {
     const form_login = (form_values.login !== undefined) ? form_values.login : false;
-    const form_password = (form_values.password !== undefined) ? form_values.login : false;
+    const form_password = (form_values.password !== undefined) ? form_values.password : false;
 
     if (form_login && form_password) {
-      await new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         setTimeout(() => {
           if (form_login === state.login && form_password === state.password) {
-            resolve();
+            commit('TOGGLE_IS_AUTHORIZED', true);
+            resolve(true);
+          } else {
+            reject('Ввели неправильный логин или пароль.');
           }
         }, 1000);
       });
     }
-    commit('setAuthenticated', value);
   }
 };
