@@ -121,18 +121,21 @@ export default {
     }
   },
   async created() {
-    this.$store.commit('TOGGLE_LOADING', true);
-
     if (!this.employees.length) {
+      this.$store.commit('TOGGLE_LOADING', true);
+
       await this.$store.dispatch(
         'employees/fetchEmployees',
         {
           fields: ['id', 'name', 'email', 'login', 'picture', 'dob', 'phone']
         }
       );
+
+      this.$store.commit('TOGGLE_LOADING', false);
     }
 
-    this.$store.commit('TOGGLE_LOADING', false);
+    // Используется для сброса фильтров пре переходе назад из карточки сотрудника.
+    this.searchEmployees();
   },
   methods: {
     sortEmployees(header_index) {
